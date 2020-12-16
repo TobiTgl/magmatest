@@ -11,6 +11,7 @@ import Box from "@material-ui/core/Box";
 import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
 
 import csgoLogo from "../assets/csgo.png"
+import lolLogo from "../assets/lol.png"
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 
@@ -122,7 +123,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+function crop(string){
+    if (string)
+    return string.replace('T',' ').replace('Z','')
+}
 
+function videogame(id){
+    if (id===3){
+        return csgoLogo
+    }
+    else if (id===1){
+        return lolLogo
+    }
+}
 
 export default function Matches(props) {
     const classes = useStyles();
@@ -131,7 +144,7 @@ export default function Matches(props) {
             <Grid container alignItems="flex-end" className={classes.match}>
                 <Grid md={3} className={classes.gameSection} item={true}>
                     <Grid md={2} className={classes.gameAvatar}>
-                        <Avatar alt={props.team1_name} src={csgoLogo} className={classes.small} />
+                        <Avatar alt={props.team1_name} src={videogame(props.videogame)} className={classes.small} />
                     </Grid>
                     <Grid md={10} className={classes.tournamentStage}>
                         <Typography variant="body2" className={classes.gameText} color="textSecondary">
@@ -150,7 +163,7 @@ export default function Matches(props) {
                     <Grid md={2} className={classes.teamAgainst}>
                         <Typography className={classes.gameText} color="textSecondary">
                             {
-                                props.results ? (<div className={classes.count}><span className={classes.winner}>2</span>:<span className={classes.looser}>1</span></div>) : <div>VS</div>
+                                props.results ? (<div className={classes.count}><span className={classes.winner}>{props.team1_score}</span>:<span className={classes.looser}>{props.team2_score}</span></div>) : <div>VS</div>
                             }
                         </Typography>
                     </Grid>
@@ -163,7 +176,7 @@ export default function Matches(props) {
                 </Grid>
                 <Grid md={3} className={classes.schedule}>
                     <Typography variant="body2" className={classes.gameText} color="textSecondary">
-                        {(props.begin_at).replace('T','&nbsp')}
+                        {crop(props.begin_at)}
                     </Typography>
                     {
                         !props.results &&

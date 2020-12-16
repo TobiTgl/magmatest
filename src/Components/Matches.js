@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     matchesTabs:{
         marginBottom: "30px",
         marginTop: "10px",
-
     }
 }));
 
@@ -65,13 +64,21 @@ export default function Matches() {
     const classes = useStyles();
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-    const [matches, setMatches] = useState([]);
+    const [pmatches, setPMatches] = useState([]);
+    const [fmatches, setFMatches] = useState([]);
     const config = {
         headers: {'Access-Control-Allow-Origin': '*'}
     }
-    const getMatches = useCallback(() => {
+    const getPastMatches = useCallback(() => {
         axios.get(userService.config.apiUrl + 'pastmatches', config).then((response) => {
-            setMatches(response.data)
+            setPMatches(response.data)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }, [])
+    const getFutureMatches = useCallback(() => {
+        axios.get(userService.config.apiUrl + 'futurematches', config).then((response) => {
+            setFMatches(response.data)
         }).catch((error) => {
             console.log(error)
         })
@@ -82,8 +89,12 @@ export default function Matches() {
     };
 
     useEffect(() => {
-        getMatches()
-    }, [getMatches])
+        getPastMatches()
+    }, [getPastMatches])
+
+    useEffect(() => {
+        getFutureMatches()
+    }, [getFutureMatches])
 
     const handleChangeIndex = (index) => {
         setValue(index);
@@ -112,7 +123,7 @@ export default function Matches() {
                 >
                     <TabPanel value={value} index={0} dir={theme.direction}>
                         {
-                            matches.map(match => (
+                            fmatches.map(match => (
                                 <Match
                                     name={match.name}
                                     begin_at={match.begin_at}
@@ -124,21 +135,34 @@ export default function Matches() {
                                     team2_name={match.team2_name}
                                     team1_pic={match.team1_url}
                                     team2_pic={match.team2_url}
+                                    team1_score={match.team1_score}
+                                    team2_score={match.team2_score}
+                                    videogame={match.videogame_id}
                                 />
                             ))
                         }
-
-                        <Match></Match>
-                        <Match></Match>
-                        <Match></Match>
-                        <Match></Match>
                     </TabPanel>
                     <TabPanel value={value} index={1} dir={theme.direction}>
-                        <Match results={true}></Match>
-                        <Match results={true}></Match>
-                        <Match results={true}></Match>
-                        <Match results={true}></Match>
-                        <Match results={true}></Match>
+                        {
+                            pmatches.map(match => (
+                                <Match
+                                    name={match.name}
+                                    begin_at={match.begin_at}
+                                    id={match.id}
+                                    type={"Best of "+match.number_of_games}
+                                    url={match.official_stream_url}
+                                    tournament={match.tournament_name}
+                                    team1_name={match.team1_name}
+                                    team2_name={match.team2_name}
+                                    team1_pic={match.team1_url}
+                                    team2_pic={match.team2_url}
+                                    team1_score={match.team1_score}
+                                    team2_score={match.team2_score}
+                                    videogame={match.videogame_id}
+                                    results={true}
+                                />
+                            ))
+                        }
                     </TabPanel>
                 </SwipeableViews>
             </Container>
